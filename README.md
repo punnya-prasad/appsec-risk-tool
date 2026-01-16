@@ -126,3 +126,7 @@ CSV/Excel import-export
 Server-based version for enterprise use
 
 Integration with ESAF ticketing systems
+
+# 📄 License
+
+Internal Use Only – Not for external distribution.
