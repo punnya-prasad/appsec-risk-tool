@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Security Checklist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+             font-size: 20px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .section-box {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.score-box {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.risk-critical { color: #dc3545; font-weight: 600; }
+.risk-high     { color: #fd7e14; font-weight: 600; }
+.risk-medium   { color: #ffc107; font-weight: 600; }
+.risk-normal   { color: #198754; font-weight: 600; }
+
+/* Compact control table */
+.table-sm td, .table-sm th {
+    padding: 0.35rem 0.5rem;
+}
+
+/* Prevent input stretching */
+.form-control-sm,
+.form-select-sm {
+    font-size: 0.85rem;
+}
+
+.chart-wrapper {
+    width: 260px;
+    height: 260px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.vapt-detail{
+    display: none;
+} 
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-light">
+<div class="container-fluid mt-3">
+    <h1 class="mb-3">Application Security Risk Assessment</h1>
+    <p class="text-muted">
+    Internal Application Security Risk Assurance Dashboard
+    </p>
+
+    <!-- Application Details -->
+    <div class="section-box">
+        <strong>Application Name:</strong> Sample Application <br>
+        <strong>SPOC:</strong> Sample Owner <br>
+        <strong>Assessment Date:</strong> Auto-generated
+    </div>
+
+      <div class="row">
+        <div class="col-md-8">
+    <!-- Control Checklist -->
+    <h2>Security Control Checklist</h2>
+    <table class="table table-bordered table-sm align-middle text-center">
+    <tr class="table-secondary">
+        <th>Control Name</th>
+        <th>Applicable</th>
+        <th>Score</th>
+        <th>Weight (%)</th>
+        <th>Weighted Score</th>
+    </tr>
+
+    <tr class="table-secondary">
+    <td class="text-start fw-medium">VAPT</td>
+
+    <td>
+        <select class="form-select form-select-sm mx-auto applicable-select"
+                style="width:80px"
+                onchange="handleApplicability(this)">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+    </td>
+
+    <!-- Score (not directly editable) -->
+    <td><span id="vaptControlScore"></span></td>
+
+    <!-- Weight -->
+    <td>15</td>
+
+    <!-- Weighted Score (from VAPT calculation) -->
+    <td><span id="vaptWeightedScore">-</span></td>
+</tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Risk Assessment</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+<!-- SCORE (comes from Risk table) -->
+  <td><span id="riskControlScore">-</span></td>
+
+  <!-- WEIGHT -->
+  <td>15</td>
+
+  <!-- WEIGHTED SCORE -->
+  <td><span id="riskWeightedScore">-</span></td>
+</tr>
+
+       <tr class="table-secondary">
+        <td class="text-start fw-medium">Secure SDLC</td>
+        <td>
+           <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+            <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">8</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">SBOM</td>
+        <td>
+           <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">6</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">CBOM</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">6</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">API Security</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">8</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+       <td class="text-start fw-medium">Authentication & MFA</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">8</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">User Management</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">6</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+       <td class="text-start fw-medium">Logging & Monitoring</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">6</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Incident Response</td>
+        <td>
+           <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">4</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Encryption</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">5</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+        <tr class="table-secondary">
+       <td class="text-start fw-medium">CIS Hardening</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+            <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">5</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Vendor Risk</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">4</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Change Management</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">2</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+
+    <tr class="table-secondary">
+        <td class="text-start fw-medium">Backup & DR</td>
+        <td>
+            <select class="form-select form-select-sm mx-auto applicable-select"
+        style="width:80px"
+        onchange="handleApplicability(this)">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+</select>
+        </td>
+        <td>
+           <input type="number"
+       class="form-control form-control-sm text-center control-score mx-auto"
+       data-weight="10"
+       min="0" max="10"
+       style="width:90px"
+       oninput="calculateControls()">
+        </td>
+        <td class="weight">2</td>
+        <td><span class="weighted-score"></span></td>
+    </tr>
+</table>
+</div>
+
+ <div class="col-md-4">
+    <h2>VAPT Assessment</h2>
+    <div class="form-check form-switch mb-2">
+    <input class="form-check-input"
+           type="checkbox"
+           id="toggleVaptDetails"
+           onchange="toggleVaptScores()">
+    <label class="form-check-label" for="toggleVaptDetails">
+        Show severity-wise VAPT scores
+    </label>
+</div>
+<table class="table table-bordered table-sm align-middle">
+        <tr class="table-secondary">
+        <th>Severity</th>
+        <th>Open</th>
+        <th>Closed</th>
+        <th>Weight</th>
+        <th class="vapt-detail">Score</th>
+    </tr>
+
+        <tr class="table-secondary">
+        <td style="color:red;"><b>Critical</b></td>
+        <td><input type="number" id="critOpen" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td><input type="number" id="critClosed" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td>40</td>
+        <td class="vapt-detail"><span id="critScore"></span></td>
+    </tr>
+
+        <tr class="table-secondary">
+        <td style="color:orange;"><b>High</b></td>
+        <td><input type="number" id="highOpen" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td><input type="number" id="highClosed" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td>30</td>
+        <td class="vapt-detail"><span id="highScore"></span></td>
+    </tr>
+
+        <tr class="table-secondary">
+        <td style="color:gold;"><b>Medium</b></td>
+        <td><input type="number" id="medOpen" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td><input type="number" id="medClosed" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td>20</td>
+       <td class="vapt-detail"><span id="medScore"></span></td>
+    </tr>
+
+        <tr class="table-secondary">
+        <td style="color:green;"><b>Low</b></td>
+        <td><input type="number" id="lowOpen" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td><input type="number" id="lowClosed" min="0" class="form-control form-control-sm" oninput="calculateVAPT()"></td>
+        <td>10</td>
+        <td class="vapt-detail"><span id="lowScore"></span></td>
+    </tr>
+</table>
+
+<p><b>Total VAPT Score:</b> <span id="vaptScore"></span></p>
+
+    <!-- Risk Assessment Section -->
+<div class="section-box">
+    <h2>Risk Assessment</h2>
+
+<div class="form-check form-switch mb-2">
+  <input class="form-check-input"
+         type="checkbox"
+         id="toggleRiskDetails"
+         onchange="toggleRiskDetails()">
+  <label class="form-check-label">
+      Show risk-level scores
+  </label>
+</div>
+
+<table class="table table-bordered table-sm align-middle">
+  <tr class="table-secondary">
+    <th>Risk Level</th>
+    <th>Open</th>
+    <th>Closed</th>
+    <th>Weight</th>
+    <th class="risk-detail">Score</th>
+  </tr>
+
+  <tr>
+    <td class="text-danger fw-bold">High</td>
+    <td><input id="riskHighOpen" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td><input id="riskHighClosed" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td>50</td>
+    <td class="risk-detail"><span id="riskHighScore"></span></td>
+  </tr>
+
+  <tr>
+    <td class="text-warning fw-bold">Medium</td>
+    <td><input id="riskMedOpen" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td><input id="riskMedClosed" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td>30</td>
+    <td class="risk-detail"><span id="riskMedScore"></span></td>
+  </tr>
+
+  <tr>
+    <td class="text-success fw-bold">Low</td>
+    <td><input id="riskLowOpen" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td><input id="riskLowClosed" type="number" class="form-control form-control-sm" oninput="calculateRisk()"></td>
+    <td>20</td>
+    <td class="risk-detail"><span id="riskLowScore"></span></td>
+  </tr>
+</table>
+
+<p><b>Total Risk Score:</b> <span id="riskScore"></span></p>
+
+</div>
+ </div>
+      </div>
+    
+<div class="section-box text-center">
+    <h2>Application Security Score</h2>
+    <div class="chart-wrapper">
+        <canvas id="gapChart"></canvas>
+    </div>
+</div>
+
+    <!-- Final Score -->
+    <div class="section-box">
+    <h2>Final Risk Score</h2>
+    <div class="score-box">
+        Total Score: <span id="totalScore">0</span><br><br>
+        Risk Level:
+        <span id="riskLevel" style="font-weight:bold; color:green;">
+            NORMAL
+        </span>
+    </div>
+</div>
+
+    <br>
+    <a href="/">⬅ Back to Index</a>
+
+<button class="btn btn-primary btn-sm" onclick="saveAssessment()">
+    Save Assessment
+</button>
+<button class="btn btn-outline-secondary btn-sm ms-2" onclick="loadAssessment()">
+    Load Assessment
+</button>
+
+<button class="btn btn-danger btn-sm" onclick="exportPDF()">
+    Export PDF
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+<script>
+// Shortcut for getting numbers safely
+function getNumber(id) {
+    return parseFloat(document.getElementById(id)?.value) || 0;
+}
+
+// Shortcut for setting text
+function setText(id, value) {
+    document.getElementById(id).innerText = value;
+}
+function calculateVAPT() {
+    const severities = [
+        { open: "critOpen", closed: "critClosed", weight: 40, score: "critScore" },
+        { open: "highOpen", closed: "highClosed", weight: 30, score: "highScore" },
+        { open: "medOpen",  closed: "medClosed",  weight: 20, score: "medScore"  },
+        { open: "lowOpen",  closed: "lowClosed",  weight: 10, score: "lowScore"  }
+    ];
+
+    let totalVapt = 0;
+
+    severities.forEach(s => {
+        const open = getNumber(s.open);
+        const closed = getNumber(s.closed);
+        const value = (open + closed > 0)
+            ? (closed / (open + closed)) * s.weight
+            : 0;
+
+        setText(s.score, value.toFixed(2));
+        totalVapt += value;
+    });
+
+    setText("vaptScore", totalVapt.toFixed(2));
+    setText("vaptControlScore", totalVapt.toFixed(2));
+
+    const vaptWeight = 15;
+    const vaptWeighted = (totalVapt * vaptWeight) / 100;
+
+// Update UI
+document.getElementById("vaptWeightedScore").innerText =
+    vaptWeighted.toFixed(2);
+
+    calculateTotalScore();
+}
+
+function calculateControls() {
+    document.querySelectorAll(".control-score").forEach(input => {
+        const row = input.closest("tr");
+        const weightedSpan = row.querySelector(".weighted-score");
+        const weight=parseFloat(row.querySelector(".weight").innerText)||0;
+        const score = parseFloat(input.value) || 0;
+
+        weightedSpan.innerText=((score*weight)/100).toFixed(2);
+    });
+
+    calculateTotalScore();
+}
+
+function calculateTotalScore() {
+    let total = 0;
+
+    document.querySelectorAll(".weighted-score").forEach(span => {
+        total += parseFloat(span.innerText) || 0;
+    });
+
+    total += parseFloat(document.getElementById("vaptWeightedScore").innerText) || 0;
+    total += parseFloat(document.getElementById("riskWeightedScore").innerText) || 0;
+
+    // Cap at 100
+    if (total > 100) total = 100;
+
+    setText("totalScore", total);
+
+    const riskSpan = document.getElementById("riskLevel");
+    riskSpan.className = "";
+
+    if (total < 25) {
+        riskSpan.innerText = "CRITICAL";
+        riskSpan.classList.add("risk-critical");
+    } else if (total < 50) {
+        riskSpan.innerText = "HIGH";
+        riskSpan.classList.add("risk-high");
+    } else if (total < 75) {
+        riskSpan.innerText = "MEDIUM";
+        riskSpan.classList.add("risk-medium");
+    } else {
+        riskSpan.innerText = "NORMAL";
+        riskSpan.classList.add("risk-normal");
+    }
+
+    const achieved = Math.min(total, 100);
+    gapChart.data.datasets[0].data = [achieved, 100 - achieved];
+    gapChart.update();
+}
+
+function calculateRisk() {
+  const ho = parseInt(riskHighOpen.value) || 0;
+  const hc = parseInt(riskHighClosed.value) || 0;
+
+  const mo = parseInt(riskMedOpen.value) || 0;
+  const mc = parseInt(riskMedClosed.value) || 0;
+
+  const lo = parseInt(riskLowOpen.value) || 0;
+  const lc = parseInt(riskLowClosed.value) || 0;
+
+  const highScore = (ho + hc) ? (hc / (ho + hc)) * 50 : 0;
+  const medScore  = (mo + mc) ? (mc / (mo + mc)) * 30 : 0;
+  const lowScore  = (lo + lc) ? (lc / (lo + lc)) * 20 : 0;
+
+  // show level-wise scores
+  riskHighScore.innerText = highScore.toFixed(2);
+  riskMedScore.innerText  = medScore.toFixed(2);
+  riskLowScore.innerText  = lowScore.toFixed(2);
+
+  // total risk score
+  const total = highScore + medScore + lowScore;
+  riskScore.innerText = total.toFixed(2);
+
+  // push to control checklist
+  const ctrl = document.getElementById("riskControlScore");
+  if (ctrl) ctrl.innerText = total.toFixed(2);
+
+  const riskWeight=15;
+  const riskWeighted=(total*riskWeight)/100;
+  document.getElementById("riskWeightedScore").innerText=riskWeighted.toFixed(2);
+
+  calculateTotalScore();
+}
+
+let gapChart;
+
+function initChart() {
+    const ctx = document.getElementById('gapChart').getContext('2d');
+
+    gapChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Achieved', 'Gap'],
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#0d6efd', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function handleApplicability(selectElement) {
+    const row = selectElement.closest("tr");
+    if (!row) return;
+
+    const scoreInput = row.querySelector("input.control-score");
+    const weightedSpan = row.querySelector(".weighted-score");
+
+    if (!scoreInput || !weightedSpan) return;
+
+    const isApplicable = selectElement.value.toLowerCase() === "yes";
+
+    scoreInput.disabled = !isApplicable;
+
+    if (!isApplicable) {
+        scoreInput.value = 0;
+        weightedSpan.innerText = 0;
+    }
+
+    calculateControls();
+}
+
+function toggleVaptScores() {
+    const show = document.getElementById("toggleVaptDetails").checked;
+
+    document.querySelectorAll(".vapt-detail").forEach(el => {
+        el.style.display = show ? "table-cell" : "none";
+    });
+}
+
+    function saveAssessment() {
+    const data = {
+        controls: [],
+        vapt: {
+            critOpen: critOpen.value,
+            critClosed: critClosed.value,
+            highOpen: highOpen.value,
+            highClosed: highClosed.value,
+            medOpen: medOpen.value,
+            medClosed: medClosed.value,
+            lowOpen: lowOpen.value,
+            lowClosed: lowClosed.value
+        },
+        risk: {
+            high: riskHigh.value,
+            medium: riskMedium.value,
+            low: riskLow.value
+        }
+    };
+
+    document.querySelectorAll(".applicable-select").forEach((sel, i) => {
+        const row = sel.closest("tr");
+        const score = row.querySelector(".control-score")?.value || 0;
+
+        data.controls.push({
+            applicable: sel.value,
+            score: score
+        });
+    });
+
+    localStorage.setItem("appSecAssessment", JSON.stringify(data));
+    alert("Assessment saved successfully");
+}
+
+    function loadAssessment() {
+    const data = JSON.parse(localStorage.getItem("appSecAssessment"));
+    if (!data) return alert("No saved assessment found");
+
+    document.querySelectorAll(".applicable-select").forEach((sel, i) => {
+        sel.value = data.controls[i].applicable;
+        handleApplicability(sel);
+
+        const row = sel.closest("tr");
+        row.querySelector(".control-score").value = data.controls[i].score;
+    });
+
+    Object.keys(data.vapt).forEach(id => {
+        document.getElementById(id).value = data.vapt[id];
+    });
+
+    Object.keys(data.risk).forEach(level => {
+        document.getElementById("risk" + level.charAt(0).toUpperCase() + level.slice(1)).value = data.risk[level];
+    });
+
+    calculateVAPT();
+    calculateRisk();
+    calculateControls();
+
+    alert("Assessment loaded successfully");
+}
+
+    function exportPDF() {
+    const element = document.body;
+
+    html2pdf()
+        .from(element)
+        .set({
+            margin: 10,
+            filename: 'Application_Security_Assessment.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { orientation: 'portrait' }
+        })
+        .save();
+}
+
+function toggleRiskDetails() {
+    const show = document.getElementById("toggleRiskDetails").checked;
+
+    document.querySelectorAll(".risk-detail").forEach(el => {
+        el.style.display = show ? "table-cell" : "none";
+    });
+}
+
+window.onload = function () {
+    initChart();
+    document.getElementById("toggleVaptDetails").checked=false;
+    toggleVaptScores();
+    document.getElementById("toggleRiskDetails").checked=false;
+    toggleRiskDetails();
+};
+</script>
+
+</div>
+</body>
+</html>
