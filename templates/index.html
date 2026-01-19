@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
     <title>Application Security Risk Assurance - Index</title>
 </head>
 <body>
+    <button onclick="logout()">Logout</button>
     <h1>Application Security Risk Assurance</h1>
     <p>Index Page</p>
 
@@ -20,5 +22,21 @@
             <td><a href="checklist.html">Open Checklist</a></td>
         </tr>
     </table>
+
+<script>
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
+});
+</script>
+
+<script>
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
+}
+</script>
 </body>
 </html>
